@@ -26,6 +26,7 @@ steps[:viirs_edr] = Step.where(name: "ViirsEdrJob").first_or_create({
   parent: steps[:viirs_sdr]
 })
 
+#VIIRS AWIPS
 steps[:viirs_awips] = Step.where(name: 'ViirsAwipsJob').first_or_create({
   command: 'viirs_awips.rb -t {{workspace}} {{job.input_path}} {{job.output_path}}',
   queue: 'polar2grid',
@@ -34,6 +35,16 @@ steps[:viirs_awips] = Step.where(name: 'ViirsAwipsJob').first_or_create({
   parent: steps[:viirs_sdr]
 })
 
+#VIIRS AWIPS LDM
+steps[:viirs_ldm] = Step.where(name: 'ViirsLdmInject').first_or_create({
+  command: 'pqinsert.rb -t . -s \"VIIRS_ALASK\" {{job.input_path}}',
+  queue: 'ldm',
+  producer: false,
+  parent: steps[:viirs_awips],
+  enabled: false
+})
+
+#VIIRS Geotiff
 steps[:viirs_geotiff] = Step.where(name: "ViirsGeoTiff").first_or_create({
   command: "p2g_geotif.rb -m viirs -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'polar2grid',
@@ -42,6 +53,7 @@ steps[:viirs_geotiff] = Step.where(name: "ViirsGeoTiff").first_or_create({
   parent: steps[:viirs_sdr]
 })
 
+#VIIRS Geotiffs formatting for Feeder
 steps[:viirs_feeder] = Step.where(name: "ViirsFeeder").first_or_create({
   command: "feeder_geotif.rb -m npp -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'geotiff',
@@ -52,14 +64,7 @@ steps[:viirs_feeder] = Step.where(name: "ViirsFeeder").first_or_create({
   enabled: false
 })
 
-steps[:viirs_ldm] = Step.where(name: 'ViirsLdmInject').first_or_create({
-  command: 'pqinsert.rb -t . -s \"VIIRS_ALASK\" {{job.input_path}}',
-  queue: 'ldm',
-  producer: false,
-  parent: steps[:viirs_awips],
-  enabled: false
-})
-
+#CRIS
 steps[:cris_sdr] = Step.where(name: 'CrisSdrJob').first_or_create({
   queue: 'cspp_sdr',
   parent: steps[:rtstps],
@@ -77,6 +82,7 @@ steps[:cris_hyperspectral] = Step.where(name: 'CrisHyperspectralJob').first_or_c
   sensor: Sensor.where(name: 'cris').first_or_create
 })
 
+#ATMS
 steps[:atms_sdr] = Step.where(name: 'AtmsSdrJob').first_or_create({
   enabled: false,
   queue: 'cspp_sdr',
@@ -96,6 +102,7 @@ steps[:atms_mirs] = Step.where(name: 'AtmsMirsJob').first_or_create({
   parent: steps[:atms_sdr]
 })
 
+#MIRS AWIPS
 steps[:atms_mirs_awips] = Step.where(name: 'AtmsMirsAwipsJob').first_or_create({
   enabled: false,
   queue: 'polar2grid',
@@ -104,7 +111,33 @@ steps[:atms_mirs_awips] = Step.where(name: 'AtmsMirsAwipsJob').first_or_create({
   processing_level: ProcessingLevel.where(name: 'mirs_awips').first_or_create,
   parent: steps[:atms_mirs]
 })
+#MIRS AWIPS LDM
+steps[:atms_mirs_awips_ldm] = Step.where(name: 'SnppMirsAwipsLdmInject').first_or_create({
+    command: 'pqinsert.rb -t . {{job.input_path}}',
+    queue: 'ldm',
+    producer: false,
+    parent: steps[:atms_mirs_awips],
+    enabled: false
+})
 
+#MIRS SCMI
+steps[:atms_mirs_scmi] = Step.where(name: 'AtmsMirsScmiJob').first_or_create({
+  enabled: false,
+  queue: 'polar2grid',
+  command: 'awips_scmi.rb -m mirs -t {{workspace}} {{job.input_path}} {{job.output_path}}',
+  sensor: Sensor.where(name: "atms").first_or_create,
+  processing_level: ProcessingLevel.where(name: 'mirs_scmi').first_or_create,
+  parent: steps[:atms_mirs]
+})
+
+#MIRS SCMI LDM
+steps[:atms_mirs_scmi_ldm] = Step.where(name: 'AtmsMirsScmiLdmInject').first_or_create({
+    command: 'pqinsert.rb -t . {{job.input_path}}',
+    queue: 'ldm',
+    producer: false,
+    parent: steps[:atms_mirs_scmi],
+    enabled: false
+})
 
 #SST
 steps[:sst] = Step.where(name: 'SSTJob').first_or_create({
@@ -144,16 +177,17 @@ steps[:sport] = Step.where(name: 'SportSlice').first_or_create({
   parent: steps[:viirs_sdr]
 })
 
-#SCMI
+#VIIRS SCMI
 steps[:snpp_viirs_scmi] = Step.where(name: 'SnppViirsSCMI').first_or_create({
     enabled: false,
     queue: 'polar2grid',
-    command: 'awips_scmi.rb -m viirs -t {{workspace}} {{job.input_path}} {{job.output_path}}',
+    command: 'awips_scmi.rb -p 4 -m viirs -t {{workspace}} {{job.input_path}} {{job.output_path}}',
     sensor: Sensor.where(name: "viirs").first_or_create,
     processing_level: ProcessingLevel.where(name: 'scmi').first_or_create,
     parent: steps[:viirs_sdr]
 })
 
+#VIIRS SCMI LDM
 steps[:snpp_viirs_scmi_ldm] = Step.where(name: 'SnppViirsSCMILdmInject').first_or_create({
     command: 'pqinsert.rb -t . -s \"VIIRS_ALASK\" {{job.input_path}}',
     queue: 'ldm',
