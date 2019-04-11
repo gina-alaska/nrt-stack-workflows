@@ -1,0 +1,4 @@
+echo "Starting.."
+echo "Testing.." 
+ls 
+echo "Done."
