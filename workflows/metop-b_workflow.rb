@@ -16,6 +16,9 @@ steps[:l1] = Step.where(name: "MetopBL1").first_or_create({
   command: "metop_l1.rb -s M01 -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   parent: steps[:l0]
 })
+
+#-----------------------                AVHRR
+# AWIPS
 steps[:awips] = Step.where(name: "MetopAwips").first_or_create({
   processing_level: ProcessingLevel.where(name: 'awips').first_or_create,
   queue: 'polar2grid',
@@ -23,6 +26,8 @@ steps[:awips] = Step.where(name: "MetopAwips").first_or_create({
   command: "metop_awips.rb -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   parent: steps[:l1]
 })
+
+#AWIPS LDM
 steps[:ldm] = Step.where(name: "MetopBLDMInject").first_or_create({
   command: "pqinsert.rb {{job.input_path}}",
   queue: 'ldm',
@@ -39,6 +44,8 @@ steps[:scmi_awips] = Step.where(name: "MetopSCMIAwips").first_or_create({
   command: "awips_scmi.rb -m avhrr -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   parent: steps[:l1]
 })
+
+#SCMI LDM
 steps[:scmi_ldm] = Step.where(name: "MetopSCMILDMInject").first_or_create({
   command: "pqinsert.rb {{job.input_path}}",
   queue: 'ldm',
@@ -48,6 +55,8 @@ steps[:scmi_ldm] = Step.where(name: "MetopSCMILDMInject").first_or_create({
 })
 
 
+#-----------------------   		MIRS
+# L2
 steps[:mirs_level2] = Step.where(name: "MetopMirsL2").first_or_create({
   processing_level: ProcessingLevel.where(name: 'l1').first_or_create,
   queue: 'cspp_extras',
@@ -56,6 +65,7 @@ steps[:mirs_level2] = Step.where(name: "MetopMirsL2").first_or_create({
   parent: steps[:l1]
 })
 
+#awips
 steps[:mirs_awips] = Step.where(name: "MetopMirsAwips").first_or_create({
   processing_level: ProcessingLevel.where(name: 'l1').first_or_create,
   queue: 'polar2grid',
@@ -63,7 +73,16 @@ steps[:mirs_awips] = Step.where(name: "MetopMirsAwips").first_or_create({
   command: "mirs_awips.rb -s amsu -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   parent: steps[:mirs_level2]
 })
+#awips ldm
+steps[:mirs_awips_ldm] = Step.where(name: "MetopSCMILDMInject").first_or_create({
+  command: "pqinsert.rb {{job.input_path}}",
+  queue: 'ldm',
+  producer: false,
+  parent: steps[:mirs_awips],
+  enabled: false
+})
 
+#SCMI
 steps[:mirs_scmi] = Step.where(name: "MetopBMirsSCMI").first_or_create({
   processing_level: ProcessingLevel.where(name: 'mirs_scmi').first_or_create,
   queue: 'polar2grid',
@@ -73,6 +92,16 @@ steps[:mirs_scmi] = Step.where(name: "MetopBMirsSCMI").first_or_create({
   parent: steps[:mirs_level2]
 })
 
+#SCMI LDM
+steps[:mirs_scmi_ldm] = Step.where(name: "MetopSCMILDMInject").first_or_create({
+  command: "pqinsert.rb {{job.input_path}}",
+  queue: 'ldm',
+  producer: false,
+  parent: steps[:mirs_scmi],
+  enabled: false
+})
+
+#-----------------------                GEOTIFF
 steps[:geotiff_l1] = Step.where(name: "MetopBGeoTiff_l1").first_or_create(
   processing_level: ProcessingLevel.where(name: 'geotiff_l1').first_or_create,
   queue: 'polar2grid',
