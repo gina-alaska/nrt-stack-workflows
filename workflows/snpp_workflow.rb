@@ -121,7 +121,7 @@ steps[:atms_mirs_awips_ldm] = Step.where(name: 'SnppMirsAwipsLdmInject').first_o
 })
 
 #MIRS SCMI
-steps[:atms_mirs_scmi] = Step.where(name: 'AtmsMirsScmiJob').first_or_create({
+steps[:atms_mirs_scmi] = Step.where(name: 'AtmsMirsScmi').first_or_create({
   enabled: false,
   queue: 'polar2grid',
   command: 'awips_scmi.rb -m mirs -t {{workspace}} {{job.input_path}} {{job.output_path}}',
@@ -131,7 +131,7 @@ steps[:atms_mirs_scmi] = Step.where(name: 'AtmsMirsScmiJob').first_or_create({
 })
 
 #MIRS SCMI LDM
-steps[:atms_mirs_scmi_ldm] = Step.where(name: 'AtmsMirsScmiLdmInject').first_or_create({
+steps[:atms_mirs_scmi_ldm] = Step.where(name: 'AtmsMirsScmiLdmInjectJob').first_or_create({
     command: 'pqinsert.rb -t . {{job.input_path}}',
     queue: 'ldm',
     producer: false,
