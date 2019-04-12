@@ -1,7 +1,7 @@
 echo "Starting Workflow update.."
 sudo -u processing bash
 
-
+echo "Setting up hab environment.."
 LD_LIBRARY_PATH="$(hab pkg path core/gcc-libs)/lib"
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(hab pkg path core/zlib)/lib
 export LD_LIBRARY_PATH
@@ -12,6 +12,19 @@ export GEM_PATH="$(hab pkg path core/ruby)/lib/ruby/gems/2.4.0:$(hab pkg path co
 export PATH="$PATH:${SANDY_DATA}/dist/bin:${SANDY_DATA}/dist/vendor/bundle/ruby/2.4.0/bin"
 export RAILS_ENV="production"
 export SANDY_SERVICE="${SANDY_SERVICE:-web}"
+
+
+echo "Obtaining current workflows.."
+temp_dir=$(mktemp -d)
+trap "rm -fr $temp_dir" 0 2 3 15
+cd $temp_dir
+curl -q -L -o ./master.zip https://github.com/gina-alaska/nrt-stack-workflows/archive/master.zip
+unzip master.zip
+
+echo "Backing up existing workflows.."
+echo mv -v /hab/svc/sandy/data/dist/db/workflows "/hab/svc/sandy/data/dist/db/workflows-$(date +%Y%m%d%H%M%S%N)-$RANDOM"
+echo "Installing new workflows.."
+echo mv -v nrt-stack-workflows-master/workflows /hab/svc/sandy/data/dist/db/workflows
 
 cd $SANDY_DATA/dist
 
