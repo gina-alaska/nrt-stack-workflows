@@ -22,13 +22,13 @@ export SANDY_SERVICE="${SANDY_SERVICE:-web}"
 
 
 echo "Backing up existing workflows.."
-echo mv -v /hab/svc/sandy/data/dist/db/workflows "/hab/svc/sandy/data/dist/db/workflows-$(date +%Y%m%d%H%M%S%N)-$RANDOM"
+mv -v /hab/svc/sandy/data/dist/db/workflows "/hab/svc/sandy/data/dist/db/workflows-$(date +%Y%m%d%H%M%S%N)-$RANDOM"
 echo "Installing new workflows.."
-echo mv -v nrt-stack-workflows-master/workflows /hab/svc/sandy/data/dist/db/workflows
+mv -v nrt-stack-workflows-master/workflows /hab/svc/sandy/data/dist/db/workflows
 
 cd $SANDY_DATA/dist
 
 echo "Applying new workflows.."
-rake --tasks
+rake db:seed
 
 echo "Done."
