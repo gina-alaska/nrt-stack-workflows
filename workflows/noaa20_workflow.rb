@@ -126,7 +126,7 @@ steps[:noaa20_nucap_ldm] = Step.where(name: 'NOAA20NucapsLdmInject').first_or_cr
 
 #-----------------  MIRS
 # L2 MIRS
-steps[:atms_mirs] = Step.where(name: 'Noaa20AtmsMirs').first_or_create({
+steps[:atms_mirs] = Step.where(name: 'Noaa20AtmsMirsJob').first_or_create({
   enabled: false,
   queue: 'cspp_extras',
   command: 'mirs_l0.rb -s noaa20 -t {{workspace}} {{job.input_path}} {{job.output_path}}',
@@ -136,7 +136,7 @@ steps[:atms_mirs] = Step.where(name: 'Noaa20AtmsMirs').first_or_create({
 })
 
 #AWIPS
-steps[:atms_mirs_awips] = Step.where(name: 'Noaa20AtmsMirsAwips').first_or_create({
+steps[:atms_mirs_awips] = Step.where(name: 'Noaa20AtmsMirsAwipsJob').first_or_create({
   enabled: false,
   queue: 'polar2grid',
   command: 'mirs_awips.rb -s atms -t {{workspace}} {{job.input_path}} {{job.output_path}}',
@@ -145,7 +145,7 @@ steps[:atms_mirs_awips] = Step.where(name: 'Noaa20AtmsMirsAwips').first_or_creat
   parent: steps[:atms_mirs]
 })
 #AWIPS LDM
-steps[:atms_mirs_awips_ldm] = Step.where(name: 'Noaa20AtmsMirsAwipsLdmInject').first_or_create({
+steps[:atms_mirs_awips_ldm] = Step.where(name: 'Noaa20AtmsMirsAwipsLdmInjectJob').first_or_create({
     command: 'pqinsert.rb -t . {{job.input_path}}',
     queue: 'ldm',
     producer: false,
@@ -153,7 +153,7 @@ steps[:atms_mirs_awips_ldm] = Step.where(name: 'Noaa20AtmsMirsAwipsLdmInject').f
     enabled: false
 })
 #SCMI
-steps[:atms_mirs_scmi] = Step.where(name: 'Noaa20AtmsMirsSCMI').first_or_create({
+steps[:atms_mirs_scmi] = Step.where(name: 'Noaa20AtmsMirsSCMIJob').first_or_create({
   enabled: false,
   queue: 'polar2grid',
   command: 'awips_scmi.rb -m mirs -t {{workspace}} {{job.input_path}} {{job.output_path}}',
@@ -163,7 +163,7 @@ steps[:atms_mirs_scmi] = Step.where(name: 'Noaa20AtmsMirsSCMI').first_or_create(
 })
 
 # SCMI LDM
-steps[:atms_mirs_scmi_ldm] = Step.where(name: 'Noaa20AtmsMirsAwipsLdmInject').first_or_create({
+steps[:atms_mirs_scmi_ldm] = Step.where(name: 'Noaa20AtmsMirsAwipsLdmInjectJob').first_or_create({
     command: 'pqinsert.rb -t . {{job.input_path}}',
     queue: 'ldm',
     producer: false,
