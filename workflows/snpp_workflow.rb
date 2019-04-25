@@ -44,6 +44,15 @@ steps[:viirs_ldm] = Step.where(name: 'ViirsLdmInject').first_or_create({
   enabled: false
 })
 
+#VIIRS NOAA FIRE
+steps[:viirs_fire] = Step.where(name: 'SNPPViirsFireJob').first_or_create({
+  command: 'noaa_viirs_fire.rb -t {{workspace}} {{job.input_path}} {{job.output_path}}',
+  queue: 'cspp_extras',
+  processing_level: ProcessingLevel.where(name: 'fire').first_or_create,
+  sensor: Sensor.where(name: 'viirs').first_or_create,
+  parent: steps[:viirs_sdr]
+})
+
 #VIIRS Geotiff
 steps[:viirs_geotiff] = Step.where(name: "ViirsGeoTiff").first_or_create({
   command: "p2g_geotif.rb -m viirs -t {{workspace}} {{job.input_path}} {{job.output_path}}",

@@ -29,6 +29,16 @@ steps[:viirs_awips] = Step.where(name: 'Noaa20ViirsAwipsJob').first_or_create({
   parent: steps[:viirs_sdr]
 })
 
+#VIIRS NOAA FIRE
+steps[:viirs_fire] = Step.where(name: 'Noaa20ViirsFireJob').first_or_create({
+  command: 'noaa_viirs_fire.rb -t {{workspace}} {{job.input_path}} {{job.output_path}}',
+  queue: 'cspp_extras',
+  processing_level: ProcessingLevel.where(name: 'fire').first_or_create,
+  sensor: Sensor.where(name: 'viirs').first_or_create,
+  parent: steps[:viirs_sdr]
+})
+
+
 #VIIRS AWIPS LDM
 steps[:viirs_ldm] = Step.where(name: 'Noaa20ViirsLdmInject').first_or_create({
   command: 'pqinsert.rb -t . -s \"VIIRS_ALASK\" {{job.input_path}}',
