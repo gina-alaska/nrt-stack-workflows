@@ -10,7 +10,7 @@ steps[:rtstps] = Step.where(name: "GcomwRtstpsJob").first_or_create({
   parent: steps[:arrival]
 })
 # Set up requirements
-steps[:l0].requirements = %w{aapp}.map do |requirement|
+steps[:rtstps].requirements = %w{aapp}.map do |requirement|
   Requirement.where(name: requirement).first_or_create
 end
 sat = Satellite.friendly.find('gcom-w')
