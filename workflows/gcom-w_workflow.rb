@@ -9,6 +9,17 @@ steps[:rtstps] = Step.where(name: "GcomwRtstpsJob").first_or_create({
   processing_level: ProcessingLevel.where(name: 'level0').first_or_create,
   parent: steps[:arrival]
 })
+
+
+#VIIRS SDR
+steps[:level1] = Step.where(name: "Amsr2Level1").first_or_create({
+  command: "amsr2_level1.rb -t {{workspace}} {{job.input_path}} {{job.output_path}}",
+  queue: "cspp_extras",
+  processing_level: ProcessingLevel.where(name: 'level1').first_or_create,
+  sensor: Sensor.where(name: 'amsr2').first_or_create,
+  parent: steps[:rtstps]
+})
+
 # Set up requirements
 steps[:rtstps].requirements = %w{aapp}.map do |requirement|
   Requirement.where(name: requirement).first_or_create
