@@ -144,6 +144,15 @@ steps[:clavrx_awips] = Step.where(name: 'MetopB_CLAVRX_AWIPS_Job').first_or_crea
   parent: steps[:clavrx]
  })
 
+steps[:clavrx_awips_ldm] = Step.where(name: "MetopBSCMILDMInject").first_or_create({
+  command: "pqinsert.rb -t . {{job.input_path}}",
+  queue: 'ldm',
+  producer: false,
+  parent: steps[:clavrx_awips],
+  enabled: false
+})
+
+
 
 steps[:geotiff_l1].requirements = %w[polar2grid].map do |requirement|
   Requirement.where(name: requirement).first_or_create
