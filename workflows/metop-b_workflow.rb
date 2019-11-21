@@ -115,6 +115,36 @@ steps[:geotiff_l2] = Step.where(name: "MetopBGeoTiff_l2").first_or_create(
   command: "feeder_geotif.rb -m metop-b -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   parent: steps[:geotiff_l1])
 
+
+steps[:clavrx] = Step.where(name: 'MetopB_CLAVRX_Job').first_or_create({
+  enabled: true,
+  queue: 'cloud',
+  command: 'clavrx_l2.rb -m avhrr -t {{workspace}} {{job.input_path}} {{job.output_path}}',
+  sensor: Sensor.where(name: "avhrr").first_or_create,
+  processing_level: ProcessingLevel.where(name: 'clavrx_level2').first_or_create,
+  parent: steps[:l1]
+ })
+
+steps[:clavrx_geotiff] = Step.where(name: 'MetopB_CLAVRX_GEOTIFF_Job').first_or_create({
+  enabled: true,
+  queue: 'polar2grid',
+  command: 'p2g_geotif.rb -p 8 -m avhrr_clavrx -t {{workspace}} {{job.input_path}} {{job.output_path}}',
+  sensor: Sensor.where(name: "avhrr").first_or_create,
+  processing_level: ProcessingLevel.where(name: 'clavrx_geotiff_l1').first_or_create,
+  parent: steps[:clavrx]
+ })
+
+
+steps[:clavrx_awips] = Step.where(name: 'MetopB_CLAVRX_AWIPS_Job').first_or_create({
+  enabled: true,
+  queue: 'polar2grid',
+  command: 'awips_scmi.rb -m clavrx -t {{workspace}} {{job.input_path}} {{job.output_path}}',
+  sensor: Sensor.where(name: "avhrr").first_or_create,
+  processing_level: ProcessingLevel.where(name: 'clavrx_scmi').first_or_create,
+  parent: steps[:clavrx]
+ })
+
+
 steps[:geotiff_l1].requirements = %w[polar2grid].map do |requirement|
   Requirement.where(name: requirement).first_or_create
 end
@@ -122,10 +152,6 @@ end
 steps[:geotiff_l2].requirements = %w[geotiff].map do |requirement|
   Requirement.where(name: requirement).first_or_create
 end
-
-
-
-
 
 # Set up requirements
 steps[:l0].requirements = %w{aapp}.map do |requirement|
