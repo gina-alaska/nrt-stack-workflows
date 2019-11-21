@@ -144,7 +144,7 @@ steps[:clavrx_awips] = Step.where(name: 'MetopB_CLAVRX_AWIPS_Job').first_or_crea
   parent: steps[:clavrx]
  })
 
-steps[:clavrx_awips_ldm] = Step.where(name: "MetopBSCMILDMInject").first_or_create({
+steps[:clavrx_awips_ldm] = Step.where(name: "MetopB_SCMI_CLAVRX_LDMInject").first_or_create({
   command: "pqinsert.rb -t . {{job.input_path}}",
   queue: 'ldm',
   producer: false,
