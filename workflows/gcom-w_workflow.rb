@@ -41,8 +41,8 @@ steps[:gtiff] = Step.where(name: "Amsr2Gtif").first_or_create({
 
 
 # Set up requirements
-steps[:rtstps].requirements = %w{aapp}.map do |requirement|
-  Requirement.where(name: requirement).first_or_create
-end
+#steps[:rtstps].requirements = %w{aapp}.map do |requirement|
+#  Requirement.where(name: requirement).first_or_create
+#end
 sat = Satellite.friendly.find('gcom-w')
 sat.workflows << steps[:arrival] unless sat.workflows.include?(steps[:arrival])
