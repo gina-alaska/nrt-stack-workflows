@@ -61,6 +61,7 @@ steps[:viirs_geotiff] = Step.where(name: "Noaa20ViirsGeoTiff").first_or_create({
 steps[:viirs_feeder] = Step.where(name: "Noaa20ViirsFeeder").first_or_create({
   command: "feeder_geotif.rb -m noaa20 -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'geotiff',
+  
   processing_level: ProcessingLevel.where(name: 'geotiff').first_or_create,
   sensor: Sensor.where(name: 'viirs').first_or_create,
   parent: steps[:viirs_geotiff]
