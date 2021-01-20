@@ -21,22 +21,46 @@ steps[:level1] = Step.where(name: "Amsr2Level1").first_or_create({
 })
 
 
-#SCMI
-steps[:scmi] = Step.where(name: "Amsr2Scmi").first_or_create({
-  command: "awips_scmi.rb  -m amsr2_l1b -t {{workspace}} {{job.input_path}} {{job.output_path}}",
-  queue: "polar2grid",
-  processing_level: ProcessingLevel.where(name: 'scmi').first_or_create,
+#GCOM Level2
+steps[:level2] = Step.where(name: "Amsr2Level2").first_or_create({
+  command: "gaasp_l2.rb -t {{workspace}} {{job.input_path}} {{job.output_path}}",
+  queue: "cspp_extras",
+  processing_level: ProcessingLevel.where(name: 'level2').first_or_create,
   sensor: Sensor.where(name: 'amsr2').first_or_create,
   parent: steps[:level1]
 })
+
+#GCOM Level2 LDM inject
+steps[:level2] = Step.where(name: 'Amsr2LdmInject').first_or_create({
+  command: 'pqinsert.rb -t . -p UAF_{{job.facility_name.upcase}}_ {{job.input_path}}',
+  queue: 'ldm',
+  producer: false,
+  parent: steps[:level2],
+ enabled: true
+})
+
 #Geotif
 steps[:gtiff] = Step.where(name: "Amsr2Gtif").first_or_create({
   command: "p2g_geotif.rb -m amsr2  -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: "polar2grid",
+  enabled: false,
   processing_level: ProcessingLevel.where(name: 'geotiff_l1').first_or_create,
   sensor: Sensor.where(name: 'amsr2').first_or_create,
   parent: steps[:level1]
 })
+
+
+#Geotiff Feeder..
+steps[:gtiff_feeder] = Step.where(name: "Amsr2_Level2_Feeder").first_or_create({
+  command: "feeder_geotif.rb -m amsr2_level2 -t {{workspace}} {{job.input_path}} {{job.output_path}}",
+  queue: "geotiff",
+  enabled: false,
+  processing_level: ProcessingLevel.where(name: 'geotiff_l2').first_or_create,
+  sensor: Sensor.where(name: 'amsr2').first_or_create,
+  parent: steps[:gtiff]
+})
+
+
 
 
 
