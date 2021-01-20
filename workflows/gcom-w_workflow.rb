@@ -31,7 +31,7 @@ steps[:level2] = Step.where(name: "Amsr2Level2").first_or_create({
 })
 
 #GCOM Level2 LDM inject
-steps[:level2] = Step.where(name: 'Amsr2LdmInject').first_or_create({
+steps[:ldm] = Step.where(name: 'Amsr2LdmInject').first_or_create({
   command: 'pqinsert.rb -t . -p UAF_{{job.facility_name.upcase}}_ {{job.input_path}}',
   queue: 'ldm',
   producer: false,
