@@ -1,7 +1,7 @@
 steps = {}
 #*******                 NOAA20
 #VIIRS SDR
-steps[:viirs_sdr] = Step.where(name: "Noaa20ViirsSdrJob").first
+steps[:viirs_sdr] = Step.where(name: "NOAA20NucapsSdrJob").first
 
 steps[:heap] = Step.where(name: "NOAA20Nucaps").first_or_create({
   command: "nucaps_l2.rb -m npp -t {{workspace}} {{job.input_path}} {{job.output_path}}",
@@ -22,7 +22,7 @@ steps[:heap_covert] = Step.where(name: "Noaa20NucapsConvert").first_or_create({
 steps = {}
 #*******                 SNPP
 #VIIRS SDR
-steps[:viirs_sdr] = Step.where(name: "ViirsSdrJob").first
+steps[:viirs_sdr] = Step.where(name: "NucapsSdrJob").first
 steps[:heap] = Step.where(name: "SNPPNucaps").first_or_create({
   command: "nucaps_l2.rb -m npp -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'cspp_extras',
