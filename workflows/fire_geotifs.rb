@@ -37,7 +37,7 @@ steps[:viirs_gm_geotiff] = Step.where(name: "NppViirsGeoTiffGm").first_or_create
 
 #VIIRS FEEDER Geotifs
 steps[:viirs_gm_feeder] = Step.where(name: "NppViirsGeoTiffGm2").first_or_create({
-  command: "feeder_geotif.rb -m snpp20gm -t {{workspace}} {{job.input_path}} {{job.output_path}}",
+  command: "feeder_geotif.rb -m nppgm -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'geotiff',
   processing_level: ProcessingLevel.where(name: 'geotiff_gm_l2').first_or_create,
   sensor: Sensor.where(name: 'viirs').first_or_create,
