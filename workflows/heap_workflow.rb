@@ -101,7 +101,7 @@ steps[:heap_covert] = Step.where(name: "MetopBNucapsConvert").first_or_create({
   parent: steps[:heap]
 })
 
-steps[:heap_ldm] = Step.where(name: 'MetopCNucapsLdmInject').first_or_create({
+steps[:heap_ldm] = Step.where(name: 'MetopBNucapsLdmInject').first_or_create({
   command: 'pqinsert.rb -t . {{job.input_path}}',
   queue: 'ldm',
   producer: false,
