@@ -18,6 +18,14 @@ steps[:heap_covert] = Step.where(name: "Noaa20NucapsConvert").first_or_create({
   parent: steps[:heap]
 })
 
+steps[:heap_ldm] = Step.where(name: 'Noaa20NucapsLdmInject').first_or_create({
+  command: 'pqinsert.rb -t . {{job.input_path}}',
+  queue: 'ldm',
+  producer: false,
+  parent: steps[:heap_covert],
+  enabled: true
+})
+
 
 steps = {}
 #*******                 SNPP
@@ -38,9 +46,17 @@ steps[:heap_covert] = Step.where(name: "SnppNucapsConvert").first_or_create({
   parent: steps[:heap]
 })
 
+steps[:heap_ldm] = Step.where(name: 'SnppNucapsLdmInject').first_or_create({
+  command: 'pqinsert.rb -t . {{job.input_path}}',
+  queue: 'ldm',
+  producer: false,
+  parent: steps[:heap_covert],
+  enabled: true
+})
+
 
 #metop-c
-steps = {} 
+steps = {}
 steps[:l1] = Step.where(name: "MetopC_L1").first
 
 steps[:heap] = Step.where(name: "MetopCNucaps").first_or_create({
@@ -56,6 +72,14 @@ steps[:heap_covert] = Step.where(name: "MetopCNucapsConvert").first_or_create({
   processing_level: ProcessingLevel.where(name: 'NucapsAwips').first_or_create,
   sensor: Sensor.where(name: 'avhrr').first_or_create,
   parent: steps[:heap]
+})
+
+steps[:heap_ldm] = Step.where(name: 'MetopCNucapsLdmInject').first_or_create({
+  command: 'pqinsert.rb -t . {{job.input_path}}',
+  queue: 'ldm',
+  producer: false,
+  parent: steps[:heap_covert],
+  enabled: true
 })
 
 #metop-b
@@ -77,4 +101,10 @@ steps[:heap_covert] = Step.where(name: "MetopBNucapsConvert").first_or_create({
   parent: steps[:heap]
 })
 
-
+steps[:heap_ldm] = Step.where(name: 'MetopCNucapsLdmInject').first_or_create({
+  command: 'pqinsert.rb -t . {{job.input_path}}',
+  queue: 'ldm',
+  producer: false,
+  parent: steps[:heap_covert],
+  enabled: true
+})
