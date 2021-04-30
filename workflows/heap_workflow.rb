@@ -4,7 +4,7 @@ steps = {}
 steps[:viirs_sdr] = Step.where(name: "NOAA20NucapsSdrJob").first
 
 steps[:heap] = Step.where(name: "NOAA20Nucaps").first_or_create({
-  command: "nucaps_l2.rb -m npp -t {{workspace}} {{job.input_path}} {{job.output_path}}",
+  command: "nucaps_l2.rb -m noaa20 -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'cspp_extras',
   processing_level: ProcessingLevel.where(name: 'nucaps_level2').first_or_create,
   sensor: Sensor.where(name: 'atms').first_or_create,
