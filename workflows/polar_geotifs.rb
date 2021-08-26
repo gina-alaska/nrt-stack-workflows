@@ -24,27 +24,29 @@ steps = {}
 #*******                 SNPP
 #VIIRS SDR
 steps[:viirs_sdr] = Step.where(name: "ViirsSdrJob").first
-
 #
 #VIIRS GEOTIFS
 steps[:snpp_viirs_polar_geotiff] = Step.where(name: "NppViirsGeoTiffPolar").first_or_create({
-  command: "p2g_geotif.rb -m viirs_polar -p 4 -t {{workspace}} {{job.input_path}} {{job.output_path}}",
+  command: "p2g_geotif.rb -m viirs_polar -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'polar2grid',
-  processing_level: ProcessingLevel.where(name: 'geotiff_gm_l1').first_or_create,
+  processing_level: ProcessingLevel.where(name: 'geotiff_polar_l1').first_or_create,
   sensor: Sensor.where(name: 'viirs').first_or_create,
   parent: steps[:viirs_sdr]
 })
 
 #VIIRS FEEDER Geotifs
-steps[:snpp_viirs_polar_feeder] = Step.where(name: "NppViirsGeoTiffGm2").first_or_create({
+steps[:snpp_viirs_polar_feeder] = Step.where(name: "NppViirsGeoTiffPolarFeeder").first_or_create({
   command: "feeder_geotif.rb -m snpp20polar -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'geotiff',
-  processing_level: ProcessingLevel.where(name: 'geotiff_gm_l2').first_or_create,
+  processing_level: ProcessingLevel.where(name: 'geotiff_polar_l2').first_or_create,
   sensor: Sensor.where(name: 'viirs').first_or_create,
-  parent: steps[:viirs_gm_geotiff]
+  parent: steps[:snpp_viirs_polar_geotiff]
 })
 
 # MODIS
+steps[:terra_l1] = Step.where(name: "TerraSeadas").first
+steps[:aqua_l1] = Step.where(name: "AquaSeadas").first
+
 steps[:terra_polar_geotiff] = Step.where(name: "TerraModisGeoTiffPolar").first_or_create({
   command: "p2g_geotif.rb -m modis_polar  -p 4 -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'polar2grid',
