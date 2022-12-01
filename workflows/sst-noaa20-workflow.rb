@@ -22,6 +22,14 @@ steps[:sst_awips] = Step.where(name: 'Noaa20SSTAwipsJob').first_or_create({
   parent: steps[:sst]
 })
 
+steps[:sst_ldm] = Step.where(name: "Noaa20SSTLDMInject").first_or_create(
+  command: 'pqinsert.rb -t . -p UAF_AII_{{job.facility_name.upcase}}_ {{job.input_path}}',
+  queue: 'ldm',
+  producer: false,
+  parent: steps[:sst_awips],
+  enabled: false)
+
+
 steps[:sst_geotiff] = Step.where(name: 'Noaa20SSTGeotifJob').first_or_create({
   enabled: false,
   queue: 'polar2grid',
@@ -30,4 +38,6 @@ steps[:sst_geotiff] = Step.where(name: 'Noaa20SSTGeotifJob').first_or_create({
   processing_level: ProcessingLevel.where(name: 'sst_geotif').first_or_create,
   parent: steps[:sst]
 })
+
+
 
