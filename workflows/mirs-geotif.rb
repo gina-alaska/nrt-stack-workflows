@@ -1,3 +1,4 @@
+steps={}
 command="p2g_geotif.rb -m mirs -t {{workspace}} {{job.input_path}} {{job.output_path}}"
 queue="polar2grid"
 processing_level = ProcessingLevel.where(name: 'mirs_geotif_l1').first_or_create
