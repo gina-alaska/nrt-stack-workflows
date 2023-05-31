@@ -34,7 +34,7 @@ steps[:viirs_fire] = Step.where(name: 'Noaa21ViirsFireJob').first_or_create({
 #VIIRS GEOTIFS
 steps[:viirs_geotiff] = Step.where(name: "Noaa21ViirsGeoTiff").first_or_create({
   command: "p2g_geotif.rb -m viirs -t {{workspace}} {{job.input_path}} {{job.output_path}}",
-  queue: 'geotiff',
+  queue: 'polar2grid',
   processing_level: ProcessingLevel.where(name: 'geotiff_l1').first_or_create,
   sensor: Sensor.where(name: 'viirs').first_or_create,
   parent: steps[:viirs_sdr]
