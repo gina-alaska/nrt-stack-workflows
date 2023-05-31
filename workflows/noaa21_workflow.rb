@@ -20,15 +20,6 @@ steps[:viirs_sdr] = Step.where(name: "Noaa21ViirsSdrJob").first_or_create({
   parent: steps[:rtstps]
 })
 
-#VIIRS AWIPS
-steps[:viirs_awips] = Step.where(name: 'Noaa21ViirsAwipsJob').first_or_create({
-  command: 'viirs_awips.rb -t {{workspace}} {{job.input_path}} {{job.output_path}}',
-  queue: 'polar2grid',
-  processing_level: ProcessingLevel.where(name: 'awips').first_or_create,
-  sensor: Sensor.where(name: 'viirs').first_or_create,
-  parent: steps[:viirs_sdr]
-})
-
 #VIIRS Noaa FIRE
 steps[:viirs_fire] = Step.where(name: 'Noaa21ViirsFireJob').first_or_create({
   command: 'noaa_viirs_fire.rb -t {{workspace}} {{job.input_path}} {{job.output_path}}',
@@ -39,20 +30,12 @@ steps[:viirs_fire] = Step.where(name: 'Noaa21ViirsFireJob').first_or_create({
 })
 
 
-#VIIRS AWIPS LDM
-steps[:viirs_ldm] = Step.where(name: 'Noaa21ViirsLdmInject').first_or_create({
-  command: 'pqinsert.rb -t . -s \"VIIRS_ALASK\" {{job.input_path}}',
-  queue: 'ldm',
-  producer: false,
-  parent: steps[:viirs_awips],
-  enabled: false
-})
 
 #VIIRS GEOTIFS
 steps[:viirs_geotiff] = Step.where(name: "Noaa21ViirsGeoTiff").first_or_create({
   command: "p2g_geotif.rb -m viirs -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'geotiff',
-  processing_level: ProcessingLevel.where(name: 'geotiff').first_or_create,
+  processing_level: ProcessingLevel.where(name: 'geotiff_l1').first_or_create,
   sensor: Sensor.where(name: 'viirs').first_or_create,
   parent: steps[:viirs_sdr]
 })
@@ -62,7 +45,7 @@ steps[:viirs_feeder] = Step.where(name: "Noaa21ViirsFeeder").first_or_create({
   command: "feeder_geotif.rb -m noaa21 -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'geotiff',
   
-  processing_level: ProcessingLevel.where(name: 'geotiff').first_or_create,
+  processing_level: ProcessingLevel.where(name: 'geotiff_l2').first_or_create,
   sensor: Sensor.where(name: 'viirs').first_or_create,
   parent: steps[:viirs_geotiff]
 })
@@ -78,7 +61,7 @@ steps[:Noaa21_viirs_scmi] = Step.where(name: 'Noaa21SnppViirsSCMI').first_or_cre
 })
 #VIIRS SCMI LDM
 steps[:Noaa21_viirs_scmi_ldm] = Step.where(name: 'Noaa21ViirsSCMILdmInject').first_or_create({
-  command: 'pqinsert.rb -t . {{job.input_path}}',
+  command: 'pqinsert.rb -t .   -p UAF_AII_{{job.facility_name.upcase}}_ {{job.input_path}}',
   queue: 'ldm',
   producer: false,
   parent: steps[:Noaa21_viirs_scmi],
@@ -186,10 +169,8 @@ steps[:atms_mirs_scmi_ldm] = Step.where(name: 'Noaa21AtmsMirsAwipsLdmInjectJob')
 
 steps[:rtstps].requirements = [Requirement.where(name: 'rt-stps').first_or_create]
 steps[:viirs_sdr].requirements = [Requirement.where(name: 'cspp_sdr').first_or_create]
-steps[:viirs_awips].requirements = [Requirement.where(name: 'polar2grid').first_or_create]
 steps[:viirs_geotiff].requirements = [Requirement.where(name: 'polar2grid').first_or_create]
 steps[:viirs_feeder].requirements = [Requirement.where(name: 'polar2grid').first_or_create]
-steps[:viirs_ldm].requirements = [Requirement.where(name: 'ldm').first_or_create]
 steps[:cris_sdr].requirements = [Requirement.where(name: 'cspp_sdr').first_or_create]
 steps[:nucaps_sdr].requirements = [Requirement.where(name: 'cspp_sdr').first_or_create]
 steps[:nucaps].requirements = [Requirement.where(name: 'cspp_extras').first_or_create]
