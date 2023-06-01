@@ -33,10 +33,10 @@ steps[:noaa21_viirs_polar_geotiff] = Step.where(name: "Noaa21ViirsGeoTiffPolar")
   parent: steps[:viirs_sdr]
 })
 
-steps[:noaa21_viirs_polar_feeder] = Step.where(name: "Noaa20ViirsGeoTiffPolarFeeder").first_or_create({
+steps[:noaa21_viirs_polar_feeder] = Step.where(name: "Noaa21ViirsGeoTiffPolarFeeder").first_or_create({
   command: "feeder_geotif.rb -m noaa21polar -t {{workspace}} {{job.input_path}} {{job.output_path}}",
   queue: 'geotiff',
   processing_level: ProcessingLevel.where(name: 'geotiff_polar_l2').first_or_create,
   sensor: Sensor.where(name: 'viirs').first_or_create,
-  parent: steps[:noaa20_viirs_polar_geotiff]
+  parent: steps[:noaa21_viirs_polar_geotiff]
 })
