@@ -11,7 +11,7 @@ sources.each do |task|
   parent = task.to_sym
   task_stub = task.gsub("SdrJob", "Edr")
   task_sym = (task_stub + 'EdrJob').to_sym
-  steps[parrent] = Step.where(name: 'task').first
+  steps[parent] = Step.where(name: 'task').first
   steps[task_sym] = Step.where(name: task_stub + 'EdrJob').first_or_create({
                                                                          command: 'viirs_edr.rb -p 8 -t {{workspace}} {{job.input_path}} {{job.output_path}}',
                                                                          queue: 'edr',
