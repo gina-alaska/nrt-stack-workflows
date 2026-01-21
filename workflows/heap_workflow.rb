@@ -1,4 +1,41 @@
 steps = {}
+#*******                 NOAA21
+steps[:rtstps] = Step.where(name: "Snoaa21RtstpsJob").first
+#---------------- NUCAPS
+# SDR
+steps[:nucaps_sdr] = Step.where(name: 'NOAA21NucapsSdrJob').first_or_create({
+  enabled: true,
+  queue: 'cspp_sdr',
+  command: 'nucaps_sdr.rb -p 8 -t {{workspace}} {{job.input_path}} {{job.output_path}}',
+  sensor: Sensor.where(name: "atms").first_or_create,
+  processing_level: ProcessingLevel.where(name: 'nucaps_level1').first_or_create,
+  parent: steps[:rtstps]
+})
+
+steps[:heap] = Step.where(name: "NOAA21Nucaps").first_or_create({
+  command: "nucaps_l2.rb -m noaa21 -t {{workspace}} {{job.input_path}} {{job.output_path}}",
+  queue: 'cspp_extras',
+  processing_level: ProcessingLevel.where(name: 'nucaps_level2').first_or_create,
+  sensor: Sensor.where(name: 'atms').first_or_create,
+  parent: steps[:viirs_sdr]
+})
+steps[:heap_covert] = Step.where(name: "Noaa21NucapsConvert").first_or_create({
+  command: "heap_awips_reformat.rb -t {{workspace}} {{job.input_path}} {{job.output_path}}",
+  queue: 'cspp_extras',
+  processing_level: ProcessingLevel.where(name: 'NucapsAwips').first_or_create,
+  sensor: Sensor.where(name: 'atms').first_or_create,
+  parent: steps[:heap]
+})
+
+steps[:heap_ldm] = Step.where(name: 'Noaa21NucapsLdmInject').first_or_create({
+  command: 'pqinsert.rb -t . {{job.input_path}}',
+  queue: 'ldm',
+  producer: false,
+  parent: steps[:heap_covert],
+  enabled: true
+})
+
+steps = {}
 #*******                 NOAA20
 #VIIRS SDR
 steps[:viirs_sdr] = Step.where(name: "NOAA20NucapsSdrJob").first
