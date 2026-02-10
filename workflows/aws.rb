@@ -19,3 +19,7 @@ steps[:level1] = Step.where(name: "AwsLevel1Job").first_or_create({
   sensor: Sensor.where(name: 'mwr').first_or_create,
   parent: steps[:rtstps]
 })
+
+
+satellite = Satellite.friendly.find('aws')
+satellite.workflows << steps[:arrival] unless satellite.workflows.include?(steps[:arrival])
