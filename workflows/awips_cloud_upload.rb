@@ -39,3 +39,21 @@ steps[:scmi_upload] = Step.where(name: 'Noaa21ViirsSCMICloudUpload').first_or_cr
   parent: steps[:scmi],
   enabled: true  
 })
+
+# EDR:
+list=["Noaa21ViirsEdrScmi", "Noaa20ViirsEdrScmi", "ViirsEdrJobSCMI"]
+list.each do |item|
+    steps = {}
+    steps[:scmi] = Step.where(name: item).first
+    steps[:scmi_upload] = Step.where(name: item + 'CloudUpload').first_or_create({
+      enabled: true,
+      queue: 'geotiff',
+      command: 'awips_s3_push.rb -t {{workspace}} {{job.input_path}}',
+      producer: false,
+      parent: steps[:scmi],
+      enabled: true  
+  })
+end
+
+
+
