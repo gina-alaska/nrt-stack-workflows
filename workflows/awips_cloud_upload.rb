@@ -41,7 +41,9 @@ steps[:scmi_upload] = Step.where(name: 'Noaa21ViirsSCMICloudUpload').first_or_cr
 })
 
 # EDR:
-list=["Noaa21ViirsEdrScmi", "Noaa20ViirsEdrScmi", "ViirsEdrJobSCMI"]
+list=["Noaa21ViirsEdrScmi", "Noaa20ViirsEdrScmi", "ViirsEdrJobSCMI", "MetopCMirsSCMI", "MetopC_SCMIAwips", "MetopBMirsSCMI", "MetopSCMIAwips", "Noaa21AtmsMirsSCMIJob", "Noaa20AtmsMirsSCMIJob"]
+clarvx_list = ["NOAA20_CLAVRX_AWIPS_Job", "SNPP_CLAVRX_AWIPS_Job", "MetopB_CLAVRX_AWIPS_Job", "MetopC_CLAVRX_AWIPS_Job"]
+list += clarvx_list
 list.each do |item|
     steps = {}
     steps[:scmi] = Step.where(name: item).first
