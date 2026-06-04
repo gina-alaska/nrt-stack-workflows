@@ -7,7 +7,6 @@ steps[:l0] = Step.where(name: "MetopSga1_L0").first_or_create({
   processing_level: ProcessingLevel.where(name: 'level0').first_or_create,
   command: "rtstps.rb -p metop-sga1 -t {{workspace}} {{job.input_file}} {{job.output_path}}",
   queue: 'rtstps',
-  processing_level: ProcessingLevel.where(name: 'level0').first_or_create,
   parent: steps[:arrival]
 })
 steps[:l1] = Step.where(name: "MetopSga1_L1").first_or_create({
