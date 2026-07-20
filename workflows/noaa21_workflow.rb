@@ -4,7 +4,7 @@ steps[:arrival] = Step.where(name: 'Noaa21Arrival').first_or_create({
   processing_level: ProcessingLevel.where(name: 'raw').first_or_create
 })
 steps[:rtstps] = Step.where(name: "SNoaa21RtstpsJob").first_or_create({
-  command: "rtstps.rb -p noaa21 -t {{workspace}} {{job.input_file}} {{job.output_path}}",
+  command: "rtstps.rb -p noaa21 -f {{job.facility_name.downcase}} -t {{workspace}} {{job.input_file}} {{job.output_path}}",
   queue: 'rtstps',
   processing_level: ProcessingLevel.where(name: 'level0').first_or_create,
   parent: steps[:arrival]
